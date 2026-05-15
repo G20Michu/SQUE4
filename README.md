@@ -1,2 +1,1 @@
-# GcDownloader
 # SQUE4
