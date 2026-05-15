@@ -1,0 +1,3 @@
+Connecting to Steam3... Done!
+Logging 'ZsTvS757767' into Steam3...
+STEAM GUARD! Please enter the auth code sent to the email at gmail.com: 
