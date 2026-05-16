@@ -14,7 +14,7 @@ SQUE4 is a Windows desktop application that automates downloading Squad game dat
 - Optional desktop shortcut creation  
 - AppData switcher (UE4 / UE5)  
 - Real-time logs and status monitoring
-- Logger in Appdata %localappdata%/sque4/debug.log 
+- Logger in Appdata %localappdata% sque4/debug.log 
 ---
 
 ## EXE Integrity Check (SHA256)
