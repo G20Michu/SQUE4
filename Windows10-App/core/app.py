@@ -72,7 +72,6 @@ class App(tk.Tk):
         )
 
     # ---------------- CLOSE ----------------
-
     def on_close(self):
         try:
             if self.download_process:
