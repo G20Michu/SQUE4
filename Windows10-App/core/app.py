@@ -15,7 +15,7 @@ class App(tk.Tk):
         # container
         container = tk.Frame(self)
         container.pack(fill="both", expand=True)
-
+        self.iconbitmap("icon1.ico")
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
