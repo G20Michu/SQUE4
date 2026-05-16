@@ -3,6 +3,7 @@ from pages.page1 import Page1
 from pages.page2 import Page2
 from pages.page3 import Page3
 import backend.DepotDownloaderHandler as ddhandler
+import psutil
 from .verify import verify
 
 class App(tk.Tk):
@@ -15,11 +16,10 @@ class App(tk.Tk):
         # container
         container = tk.Frame(self)
         container.pack(fill="both", expand=True)
-        self.iconbitmap("icon1.ico")
+        self.iconbitmap("icon.ico")
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-       
         self.page1 = Page1(container, self)
         self.page2 = Page2(container, self)
         self.page3 = Page3(container, self)
@@ -76,7 +76,14 @@ class App(tk.Tk):
     def on_close(self):
         try:
             if self.download_process:
-                ddhandler.stop_download(self.download_process)
+
+                parent = psutil.Process(self.download_process.pid)
+
+                for child in parent.children(recursive=True):
+                    child.kill()
+
+                parent.kill()
         except Exception:
             pass
+
         self.destroy()
