@@ -36,3 +36,5 @@ fb2898cf78b25ff52c069115a2657b9b76a8560a8cda9734950f99e0b1452f91
 ### Warning
 
 If the generated hash is different, the file has been modified or is not an official release.
+### Project Python Version
+Python 3.12.10
