@@ -4,10 +4,13 @@ import os
 import time
 import re
 import win32com.client
-import sys
+from core.logger import Logger
+logger = Logger()
+
 def _depot_executable_path():
     base = os.path.abspath(os.path.join(os.path.dirname(__file__), ".."))
     return os.path.join(base, "Dependencies", "WindowsX64", "DepotDownloader.exe")
+
 
 def create_shortcut_from_folder(folder_path, exe_name=None):
     desktop = os.path.join(os.environ["USERPROFILE"], "Desktop")
@@ -28,7 +31,8 @@ def create_shortcut_from_folder(folder_path, exe_name=None):
             break
 
     if not target_exe:
-        print("❌ No EXE found!")
+        logger.error("Can't find the target executable")
+        logger.error("Can't create shortcut to desktop")
         return
 
     shortcut_name = os.path.splitext(os.path.basename(target_exe))[0] + ".lnk"
@@ -41,13 +45,13 @@ def create_shortcut_from_folder(folder_path, exe_name=None):
     shortcut.WorkingDirectory = os.path.dirname(target_exe)
     shortcut.IconLocation = target_exe
     shortcut.save()
-
-    print(f"✅ Shortcut created: {shortcut_path}")
+    logger.info("Shortcut created on desktop ")
 
 def start_download(login, password, folder, callback=None, log_path="depot_log.txt",create_shortcut = False):
+
     base_dir = os.path.join(os.environ["LOCALAPPDATA"], "sque4")
     os.makedirs(base_dir, exist_ok=True)
-    folder +="\SquadUe4"
+    folder = os.path.join(folder, "SquadUe4")
 
     log_path = os.path.join(base_dir, "depot_log.txt")
 
@@ -60,6 +64,7 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
         "-depot", "393381",
         "-manifest", "6933829828063991908",
     ]
+
     log_file = open(log_path, "w", encoding="utf-8")
     creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW
 
@@ -83,38 +88,39 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
             with open(log_path, "r", encoding="cp1250", errors="replace") as f:
                 f.seek(0, 2)
 
-                last_line_time = time.time()
                 start_download = False
                 while True:
-                    print("reading line.....")
                     line = f.readline()
 
                     if line:
-                        last_line_time = time.time()  # reset timera
 
                         line = line.rstrip("\n")
                         lc = line.lower()
 
-                        print("last line:", line)
                         emit("log", line)
 
-                        # --- ERRORS DETECTION ---
+                        # --- STEAM  GUARD DETECTION ---
                         if "steam guard" in lc or "auth code" in lc or "email" in lc:
+                            logger.logger("steam guard detected")
                             emit("steam_guard", line)
 
                         if "invalidpassword" in lc:
                             emit("error", "invalid_password")
+                            logger.info("invalid password")
                             process.terminate()
+                            logger.logger("terminating downloader")
                             break
 
                         if "ratelimit" in lc:
                             emit("error", "rate_limit")
+                            logger.warning("rate limit reached for authentication")
 
                         if "initialize steam failed" in lc:
+                            logger.logger("initializing steam failed")
                             emit("error", "init_failed")
 
                         if "failed to allocate file" in lc:
-                            print("error")
+                            logger.warning("disk full cannot allocate file")
                             emit("error", "disk_full")
                             break
                         progress_match = re.search(r"(\d+(\.\d+)?)\s*%", line)
@@ -127,12 +133,13 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
                                 if create_shortcut:
                                     create_shortcut_from_folder(folder)
                                 emit("complete")
+                                logger.info("download complete")
                                 break
                             emit("progress", percent)
                     time.sleep(0.001)
 
         except Exception as e:
-            print("error:", e)
+            logger.critical("while downloading: " + e)
             emit("error", str(e))
 
 

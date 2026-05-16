@@ -4,10 +4,8 @@ from pages.page1 import Page1
 from pages.page2 import Page2
 from pages.page3 import Page3
 import backend.DepotDownloaderHandler as ddhandler
-import psutil
-import signal
-
-from .verify import verify
+from .logger import Logger
+from .verify import VerifySquadAppdata
 
 class App(tk.Tk):
     def __init__(self):
@@ -37,6 +35,8 @@ class App(tk.Tk):
         # backend callback entry point
         self.download_process = None
         self.protocol("WM_DELETE_WINDOW", self.on_close)
+
+        self.logger = Logger()
     # ---------------- Download Handler ----------
     def start_download(self,login, password, folder, callback=None, log_path="depot_log.txt",create_shortcut = False):
         self.download_process, _ = ddhandler.start_download(
@@ -53,7 +53,7 @@ class App(tk.Tk):
     # ---------------- NAVIGATION ----------------
 
     def show_page(self, page):
-        verify()
+        VerifySquadAppdata()
         page.tkraise()
 
     # ---------------- BACKEND EVENTS ----------------
@@ -75,10 +75,11 @@ class App(tk.Tk):
     # ---------------- CLOSE ----------------
     def on_close(self):
         try:
-            print("trying to kill downloader")
-            print("downloader pid " ,self.download_process.pid)
+            self.logger.info("trying to close downloader")
+            self.logger.info("downloader pid " ,self.download_process.pid)
             if self.download_process:
-                print("killing downloader")
+
+
                 import psutil
 
                 parent = psutil.Process(self.download_process.pid)
@@ -87,8 +88,9 @@ class App(tk.Tk):
                     child.kill()
 
                 parent.kill()
+                self.logger.info("downloader closed")
 
         except Exception as e:
-            print("close error:", e)
+            self.logger.error(e)
 
         self.destroy()
