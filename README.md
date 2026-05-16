@@ -1,6 +1,6 @@
 # SQUE4
 
-SQUE4 is a Windows desktop application that automates downloading game data using DepotDownloader and manages AppData switching between UE4 and UE5 environments. The application provides a simple graphical interface built with Tkinter.
+SQUE4 is a Windows desktop application that automates downloading Squad game data using DepotDownloader and manages AppData switching between UE4 and UE5 environments. The application provides a simple graphical interface built with Tkinter.
 
 ---
 
