@@ -61,7 +61,7 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
         "-manifest", "6933829828063991908",
     ]
     log_file = open(log_path, "w", encoding="utf-8")
-    creationflags = subprocess.CREATE_NO_WINDOW if sys.platform == "win32" else 0
+    creationflags=subprocess.CREATE_NEW_PROCESS_GROUP | subprocess.CREATE_NO_WINDOW
 
     process = subprocess.Popen(
         cmd,

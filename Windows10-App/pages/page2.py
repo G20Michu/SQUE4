@@ -2,7 +2,6 @@ import tkinter as tk
 from tkinter import ttk, filedialog
 import backend.DepotDownloaderHandler as ddhandler
 
-
 class Page2(tk.Frame):
     def __init__(self, master, controller):
         super().__init__(master, bg="#0f1220")
@@ -127,7 +126,6 @@ class Page2(tk.Frame):
         self.password_var.trace_add("write", self._check_form)
         self.folder_var.trace_add("write", self._check_form)
 
-        self.download_process = None
 
         self._check_form()
 
@@ -241,11 +239,10 @@ class Page2(tk.Frame):
 
         self.append_log("Starting download...")
 
-        self.download_process, _ = ddhandler.start_download(
+        self.controller.start_download(
             self.login_var.get(),
             self.password_var.get(),
             self.folder_var.get(),
-            callback=self.controller.on_backend_event,
             create_shortcut=bool(self.shortcut_var.get())
         )
 
