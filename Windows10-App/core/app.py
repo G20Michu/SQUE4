@@ -19,7 +19,7 @@ class App(tk.Tk):
         container.grid_rowconfigure(0, weight=1)
         container.grid_columnconfigure(0, weight=1)
 
-        # ✅ TWORZYSZ TYLKO RAZ (TO BYŁ TWÓJ BUG)
+       
         self.page1 = Page1(container, self)
         self.page2 = Page2(container, self)
         self.page3 = Page3(container, self)
