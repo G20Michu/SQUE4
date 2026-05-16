@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
-import backend.DepotDownloaderHandler as ddhandler
+
 
 class Page2(tk.Frame):
     def __init__(self, master, controller):
@@ -93,6 +93,7 @@ class Page2(tk.Frame):
             font=("Consolas", 9)
         )
         self.log.pack(fill="both", expand=True, padx=10, pady=8)
+        self.guard_popup_open = False
         self.download_clicked = False
         # ================= ERROR =================
         self.login_error_frame = tk.Frame(container, bg="#2a0f14")
@@ -160,9 +161,20 @@ class Page2(tk.Frame):
         self.after(0, lambda: self._handle_event(event, data))
 
     def show_guard_ui(self):
+        if self.guard_popup_open:
+            return  # blokada drugiego okna
+
+        self.guard_popup_open = True
+
         popup = tk.Toplevel(self)
         popup.title("Steam Guard")
         popup.geometry("300x150")
+
+        def on_close():
+            self.guard_popup_open = False
+            popup.destroy()
+
+        popup.protocol("WM_DELETE_WINDOW", on_close)
 
         tk.Label(popup, text="Enter Steam Guard code").pack(pady=10)
 
@@ -172,7 +184,8 @@ class Page2(tk.Frame):
         entry.pack()
 
         def send():
-            ddhandler.send_guard(self.download_process, code_var.get())
+            self.controller.send_guard(code_var.get())
+            self.guard_popup_open = False
             popup.destroy()
 
         ttk.Button(popup, text="Send", command=send).pack(pady=10)

@@ -45,6 +45,11 @@ class App(tk.Tk):
             folder,
             callback=self.on_backend_event
         )
+    # --------------- Send Guard -----------------
+    def send_guard(self, code: str):
+        if self.download_process and self.download_process.stdin:
+            self.download_process.stdin.write(code + "\n")
+            self.download_process.stdin.flush()
     # ---------------- NAVIGATION ----------------
 
     def show_page(self, page):

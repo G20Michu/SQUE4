@@ -141,7 +141,4 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
     t.start()
 
     return process, t
-def send_guard(process, code: str):
-    if process and process.stdin:
-        process.stdin.write(code + "\n")
-        process.stdin.flush()
+
