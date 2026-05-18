@@ -55,7 +55,7 @@ class Page1(tk.Frame):
 
         self.download_btn = ttk.Button(
             btn_container,
-            text="⬇ DOWNLOAD",
+            text="⬇ DOWNLOAD SQUAD",
             command=self.go_download
         )
         self.download_btn.grid(row=0, column=0, padx=8)
