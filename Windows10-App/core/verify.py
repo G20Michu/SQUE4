@@ -2,7 +2,69 @@ import os
 import re
 import shutil
 from .logger import Logger
+import winreg
+
 logger = Logger()
+
+#------------ steam ----------------
+def get_steam_path():
+    try:
+        key = winreg.OpenKey(winreg.HKEY_LOCAL_MACHINE, r"SOFTWARE\WOW6432Node\Valve\Steam")
+        value, _ = winreg.QueryValueEx(key, "InstallPath")
+        return value
+    except:
+        # fallback
+        logger.warning("steam path not found in winreg")
+        default = r"C:\Program Files (x86)\Steam"
+        if os.path.exists(default):
+            return default
+    logger.warning("no steam path found")
+    return None
+
+
+def get_libraries(steam_path):
+    libraries = [steam_path]
+
+    vdf_path = os.path.join(steam_path, "steamapps", "libraryfolders.vdf")
+
+    if not os.path.exists(vdf_path):
+        return libraries
+
+    with open(vdf_path, "r", encoding="utf-8") as f:
+        for line in f:
+            if ":\\" in line:
+                path = line.split('"')[3]
+                path = path.replace("\\\\", "\\")
+                libraries.append(path)
+
+    return libraries
+
+
+def VerifySquadMod(squad_mod_id: int):
+    steam_path = get_steam_path()
+
+    if not steam_path:
+        logger.warning("Steam not found")
+        return False
+
+    libraries = get_libraries(steam_path)
+
+    for lib in libraries:
+        workshop_path = os.path.join(lib, "steamapps", "workshop", "content", "393380")
+
+        if os.path.exists(workshop_path):
+            logger.info(f"Found path: {workshop_path}")
+
+            for mod in os.listdir(workshop_path):
+                full_path = os.path.join(workshop_path, mod)
+                if os.path.isdir(full_path):
+                    logger.info(f"  Mod: {full_path}")
+                    if str(squad_mod_id) in full_path:
+                        return True
+
+    return False
+
+#------------- appdata ----------------
 def base_dir():
     base = os.path.join(os.environ["LOCALAPPDATA"], "SquadGame")
     return base

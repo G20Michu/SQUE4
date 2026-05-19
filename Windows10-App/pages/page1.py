@@ -1,6 +1,6 @@
 import tkinter as tk
 from tkinter import ttk
-from core.verify import switch_appdata, VerifySquadAppdata
+from core.verify import switch_appdata, VerifySquadAppdata, VerifySquadMod
 
 
 class Page1(tk.Frame):
@@ -35,6 +35,7 @@ class Page1(tk.Frame):
         self.card = tk.Frame(container, bg="#1b2035", bd=0, relief="flat")
         self.card.pack(fill="x", pady=(0, 20))
 
+        # APPDATA STATUS
         self.status_label = tk.Label(
             self.card,
             text="Checking AppData...",
@@ -44,7 +45,15 @@ class Page1(tk.Frame):
         )
         self.status_label.pack(pady=15)
 
-        self.refresh_status()
+        # MOD STATUS
+        self.mod_status_label = tk.Label(
+            self.card,
+            text="Checking mods...",
+            font=("Segoe UI", 10),
+            bg="#1b2035",
+            fg="#9ca3af"
+        )
+        self.mod_status_label.pack(pady=(0, 15))
 
         # ================= BUTTONS =================
         btn_container = tk.Frame(container, bg="#0f1220")
@@ -84,10 +93,14 @@ class Page1(tk.Frame):
         )
         footer.pack(side="bottom", pady=10)
 
+        # 👉 NA KOŃCU (ważne!)
+        self.refresh_status()
+
     # ================= FUNCTIONS =================
 
     def refresh_status(self):
         try:
+            # ===== APPDATA =====
             result = VerifySquadAppdata()
 
             if result == "UE4":
@@ -102,15 +115,43 @@ class Page1(tk.Frame):
 
             self.status_label.config(text=text, fg=color)
 
+            # ===== MOD =====
+            try:
+                status = VerifySquadMod(2428425228)
+
+                if status is True:
+                    mod_text = "Mod: Installed ✅"
+                    mod_color = "#34d399"
+                elif status is False:
+                    mod_text = "Mod: Not installed ❌"
+                    mod_color = "#ef4444"
+                else:
+                    mod_text = f"Mod: {status}"
+                    mod_color = "#fbbf24"
+
+                self.mod_status_label.config(text=mod_text, fg=mod_color)
+
+            except Exception as e:
+                self.mod_status_label.config(
+                    text=f"Mod error: {e}",
+                    fg="#ef4444"
+                )
+
         except Exception as e:
-            self.status_label.config(text=f"Error: {e}", fg="#ef4444")
+            self.status_label.config(
+                text=f"Error: {e}",
+                fg="#ef4444"
+            )
 
     def handle_switch(self):
         try:
             switch_appdata()
             self.refresh_status()
         except Exception as e:
-            self.status_label.config(text=f"Switch error: {e}", fg="#ef4444")
+            self.status_label.config(
+                text=f"Switch error: {e}",
+                fg="#ef4444"
+            )
 
     def go_download(self):
         self.controller.show_page(self.controller.page2)

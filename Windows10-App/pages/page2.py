@@ -1,6 +1,7 @@
 import tkinter as tk
 from tkinter import ttk, filedialog
-
+import shutil
+import os
 
 class Page2(tk.Frame):
     def __init__(self, master, controller):
@@ -95,6 +96,7 @@ class Page2(tk.Frame):
         self.log.pack(fill="both", expand=True, padx=10, pady=8)
         self.guard_popup_open = False
         self.download_clicked = False
+        self._error_after_id = None
         # ================= ERROR =================
         self.login_error_frame = tk.Frame(container, bg="#2a0f14")
         self.login_error_label = tk.Label(
@@ -131,12 +133,47 @@ class Page2(tk.Frame):
         self._check_form()
 
     # ================= FORM CHECK =================
+    def _has_enough_space(self, path, required_gb=110):
+        try:
+            total, used, free = shutil.disk_usage(path)
+            free_gb = free / (1024 ** 3)
+
+            self.append_log(f"💾 Free space: {free_gb:.2f} GB")
+
+            return free_gb >= required_gb
+
+        except Exception as e:
+            self.append_log(f"❌ Disk check error: {e}")
+            return False
+
     def _check_form(self, *args):
         login = self.login_var.get().strip()
         password = self.password_var.get().strip()
         folder = self.folder_var.get().strip()
+        login_flag = False
+        password_flag = False
+        folder_flag = False
 
-        if login and password and folder:
+        if login:
+            login_flag = True
+        else: login_flag = False
+
+        if password:
+            password_flag = True
+        else: password_flag = False
+
+        if folder:
+
+            if self._has_enough_space(folder,110) == False :
+                self.show_login_error("Not enough disk space! Minimum 110 GB required.")
+                folder_flag= False
+            else:
+                folder_flag = True
+        else:
+            folder_flag = False
+
+
+        if password_flag == True and login_flag == True and folder_flag == True:
             self.download_btn.config(
                 state="normal",
                 bg="#22c55e",
@@ -266,6 +303,17 @@ class Page2(tk.Frame):
             self.folder_var.set(path)
 
     # ================= ERROR =================
+    def hide_login_error(self):
+        self.login_error_frame.pack_forget()
+        self._error_after_id = None
+
     def show_login_error(self, text):
         self.login_error_label.config(text=text)
         self.login_error_frame.pack(fill="x", pady=(8, 0))
+
+        # cancel previous timer
+        if self._error_after_id:
+            self.after_cancel(self._error_after_id)
+
+        # auto hide after 3 seconds
+        self._error_after_id = self.after(3000, self.hide_login_error)

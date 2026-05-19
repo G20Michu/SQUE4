@@ -5,7 +5,7 @@ from pages.page2 import Page2
 from pages.page3 import Page3
 import backend.DepotDownloaderHandler as ddhandler
 from .logger import Logger
-from .verify import VerifySquadAppdata
+from .verify import VerifySquadAppdata , switch_appdata
 
 class App(tk.Tk):
     def __init__(self):
@@ -39,6 +39,7 @@ class App(tk.Tk):
         self.logger = Logger()
     # ---------------- Download Handler ----------
     def start_download(self,login, password, folder, callback=None, log_path="depot_log.txt",create_shortcut = False):
+        switch_appdata()
         self.download_process, _ = ddhandler.start_download(
             login,
             password,

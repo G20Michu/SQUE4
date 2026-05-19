@@ -101,14 +101,14 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
 
                         # --- STEAM  GUARD DETECTION ---
                         if "steam guard" in lc or "auth code" in lc or "email" in lc:
-                            logger.logger("steam guard detected")
+                            logger.info("steam guard detected")
                             emit("steam_guard", line)
 
                         if "invalidpassword" in lc:
                             emit("error", "invalid_password")
                             logger.info("invalid password")
                             process.terminate()
-                            logger.logger("terminating downloader")
+                            logger.warning("terminating downloader")
                             break
 
                         if "ratelimit" in lc:
@@ -116,7 +116,7 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
                             logger.warning("rate limit reached for authentication")
 
                         if "initialize steam failed" in lc:
-                            logger.logger("initializing steam failed")
+                            logger.info("initializing steam failed")
                             emit("error", "init_failed")
 
                         if "failed to allocate file" in lc:
@@ -139,7 +139,7 @@ def start_download(login, password, folder, callback=None, log_path="depot_log.t
                     time.sleep(0.001)
 
         except Exception as e:
-            logger.critical("while downloading: " + e)
+            logger.critical("while downloading: " + str(e))
             emit("error", str(e))
 
 
