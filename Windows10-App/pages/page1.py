@@ -93,7 +93,6 @@ class Page1(tk.Frame):
         )
         footer.pack(side="bottom", pady=10)
 
-        # 👉 NA KOŃCU (ważne!)
         self.refresh_status()
 
     # ================= FUNCTIONS =================
