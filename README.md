@@ -33,6 +33,12 @@ Get-FileHash "SQUE4.exe" -Algorithm SHA256
 4d8f790b3ef72cc266623163d508e63897f008b58f2c0090ab564d743d22f1d5
 ```
 
+ACE Aprooved release hash:
+
+```
+71AEAFAB6CA916FBB67446FDC24FE2FAF450C5D266D68DD698271E06585A1BE9
+```
+
 ### Warning
 
 If the generated hash is different, the file has been modified or is not an official release.
