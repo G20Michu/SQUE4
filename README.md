@@ -38,3 +38,29 @@ Get-FileHash "SQUE4.exe" -Algorithm SHA256
 If the generated hash is different, the file has been modified or is not an official release.
 ### Project Python Version
 Python 3.12.10
+
+
+
+## How to compile
+
+1. Go to the Windows10-App directory.
+
+2. Create a virtual environment:
+```   
+python -m venv .venv
+```
+3. Activate the virtual environment:
+```   
+.venv\Scripts\activate
+```
+4. Install required packages:
+```   
+pip install pyinstaller pywin32 psutil
+```
+5. Build the executable using PyInstaller:
+```   
+pyinstaller --onefile --noconsole --icon=icon.ico --add-data "Dependencies;Dependencies" --hidden-import=win32com --hidden-import=win32com.client --hidden-import=pythoncom --hidden-import=pywintypes --hidden-import=psutil SQUE4.py
+```
+After compilation, the executable will be in:
+dist/SQUE4.exe
+
